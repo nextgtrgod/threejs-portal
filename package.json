@@ -1,5 +1,5 @@
 {
-  "name": "threejs-boilerplate",
+  "name": "threejs-portal",
   "version": "1.0.0",
   "scripts": {
     "start": "vite",
@@ -9,7 +9,7 @@
   "dependencies": {
     "lil-gui": "^0.15.0",
     "stats.js": "^0.17.0",
-    "three": "0.135.0"
+    "three": "^0.136.0"
   },
   "devDependencies": {
     "postcss-import": "^14.0.2",
