@@ -1,15 +1,7 @@
-import modelUrl from '@/assets/models/portal.glb?url'
-import bakedTextureUrl from '@/assets/textures/baked.jpg?url'
+import controls from './controls.js'
+import sources from './sources.js'
 
-export const sources = [
-	{
-		type: 'gltf',
-		name: 'model',
-		path: modelUrl,
-	},
-	{
-		type: 'texture',
-		name: 'bakedTexture',
-		path: bakedTextureUrl,
-	},
-]
+export {
+	controls,
+	sources,
+}

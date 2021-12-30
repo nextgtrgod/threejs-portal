@@ -26,8 +26,6 @@ export default class World {
 	}
 
 	setMesh() {
-		console.log(this.resources.items['model'].scene)
-
 		const bakedTexture = this.resources.items['bakedTexture']
 		bakedTexture.flipY = false
 		bakedTexture.encoding = THREE.sRGBEncoding
