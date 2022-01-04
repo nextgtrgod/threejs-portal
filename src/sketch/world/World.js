@@ -1,15 +1,18 @@
 import * as THREE from 'three'
+import EventEmitter from '../utils/EventEmitter.js'
 import Sketch from '../Sketch.js'
 import Resources from '../utils/Resources.js'
 import { sources } from '@/config'
-import portalVertexShader from '@/shaders/portal/vertex.glsl?raw'
-import portalFragmentShader from '@/shaders/portal/fragment.glsl?raw'
+import vertexShader from '@/shaders/portal/vertex.glsl?raw'
+import fragmentShader from '@/shaders/portal/fragment.glsl?raw'
 import Fireflies from './Fireflies.js'
 
 let instance = null
 
-export default class World {
+export default class World extends EventEmitter {
 	constructor() {
+		super()
+
 		if (instance) return instance
 		instance = this
 
@@ -19,13 +22,18 @@ export default class World {
 		this.resources.load(sources)
 
 		this.resources.on('ready', () => {
-			this.setMesh()
+			this.createMaterials()
+			this.setMaterials()
 
-			this.fireflies = new Fireflies(30)
+			const fireflies = new Fireflies(30)
+
+			this.meshes['fireflies'] = fireflies.mesh
 		})
 	}
 
-	setMesh() {
+	createMaterials() {
+		this.materials = {}
+
 		const bakedTexture = this.resources.items['bakedTexture']
 		bakedTexture.flipY = false
 		bakedTexture.encoding = THREE.sRGBEncoding
@@ -34,52 +42,57 @@ export default class World {
 		bakedTexture.magFilter = THREE.NearestFilter
 		bakedTexture.anisotropy = 16
 
-		const bakedMaterial = new THREE.MeshBasicMaterial({
+		this.materials['baked'] = new THREE.MeshBasicMaterial({
 			map: bakedTexture,
 		})
 
-		const poleLightMaterial = new THREE.MeshBasicMaterial({
+		this.materials['poleLight'] = new THREE.MeshBasicMaterial({
 			color: 0xfefff0,
 		})
 
-		const portalLightMaterial = new THREE.ShaderMaterial({
+		this.materials['portalLight'] = new THREE.ShaderMaterial({
 			uniforms: {
 				uTime: { value: 0 },
 				uColorStart: { value: new THREE.Color(0x000000) },
 				uColorEnd: { value: new THREE.Color(0xffffff) },
 			},
-			vertexShader: portalVertexShader,
-			fragmentShader: portalFragmentShader,
+			vertexShader,
+			fragmentShader,
 		})
-
-		this.model = this.resources.items['model'].scene
-		
-		const bakedMesh = this.model.children.find(child => child.name === 'baked')
-		bakedMesh.material = bakedMaterial
-
-		this.portalLight = this.model.children.find(child => child.name === 'portalLight')
-		this.portalLight.material = portalLightMaterial
-
-		const poleLightA = this.model.children.find(child => child.name === 'poleLightA')
-		poleLightA.material = poleLightMaterial
-
-		const poleLightB = this.model.children.find(child => child.name === 'poleLightB')
-		poleLightB.material = poleLightMaterial
-
-		this.scene.add(this.model)
 	}
 
-	setTexture() {
-		this.texture = this.resources.items['protalTexture']
+	setMaterials() {
+		const model = this.resources.items['model'].scene
+
+		const map = {
+			baked: 'baked',
+			poleLightA: 'poleLight',
+			poleLightB: 'poleLight',
+			portalLight: 'portalLight',
+		}
+
+		this.meshes = {}
+
+		const names = Object.keys(map)
+		for (let i = 0; i < model.children.length; i++) {
+
+			if (Object.keys(this.meshes).length === names.length) break
+
+			const child = model.children[i]
+
+			if (names.includes(child.name)) {
+				this.meshes[child.name] = child
+				this.meshes[child.name].material = this.materials[ map[child.name] ]
+			}
+		}
+
+		this.scene.add(model)
+
+		this.emit('ready')
 	}
 
 	update(elapsed) {
-		if (this.portalLight) {
-			this.portalLight.material.uniforms.uTime.value = elapsed
-		}
-
-		if (this.fireflies) {
-			this.fireflies.mesh.material.uniforms.uTime.value = elapsed
-		}
+		this.meshes.portalLight.material.uniforms.uTime.value = elapsed
+		this.meshes.fireflies.material.uniforms.uTime.value = elapsed
 	}
 }

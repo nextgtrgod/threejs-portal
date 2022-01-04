@@ -17,14 +17,18 @@ export default class Sketch {
 
 		this.debug = new Debug()
 		this.viewport = new Viewport()
-		this.time = new Time()
 		this.scene = new THREE.Scene()
 		this.camera = new Camera()
 		this.renderer = new Renderer()
 		this.world = new World()
 
 		this.viewport.on('resize', this.resize.bind(this))
-		this.time.on('update', this.update.bind(this))
+
+		this.world.on('ready', () => {
+			this.time = new Time()
+			this.time.on('update', this.update.bind(this))
+			document.body.classList.remove('loading')
+		})
 	}
 
 	resize() {

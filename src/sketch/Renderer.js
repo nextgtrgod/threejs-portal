@@ -22,7 +22,7 @@ export default class Renderer {
 		})
 		this.instance.outputEncoding = THREE.sRGBEncoding
 		// this.instance.physicallyCorrectLights = true
-		this.instance.toneMapping = THREE.ACESFilmicToneMapping
+		// this.instance.toneMapping = THREE.ACESFilmicToneMapping
 		this.instance.setClearColor('#232323')
 		this.instance.setSize(this.viewport.width, this.viewport.height)
 		this.instance.setPixelRatio(this.viewport.pixelRatio)
