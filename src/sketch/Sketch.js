@@ -37,7 +37,7 @@ export default class Sketch {
 	}
 
 	update(elapsed, delta) {
-		this.debug.begin()
+		this.debug.beforeRender()
 
 		this.camera.update()
 
@@ -45,6 +45,6 @@ export default class Sketch {
 
 		this.renderer.update()
 
-		this.debug.end()
+		this.debug.afterRender()
 	}
 }

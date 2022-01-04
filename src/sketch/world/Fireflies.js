@@ -1,17 +1,25 @@
 import * as THREE from 'three'
 import World from './World.js'
+import Viewport from '../utils/Viewport.js'
+import Debug from '../utils/Debug.js'
 import vertexShader from '@/shaders/fireflies/vertex.glsl?raw'
 import fragmentShader from '@/shaders/fireflies/fragment.glsl?raw'
+import parameters from '@/config/scene.js'
 
 export default class Fireflies {
-	constructor(count = 30) {
+	constructor(count = parameters.fireflies.count) {
+		this.count = count
 		this.world = new World()
 		this.scene = this.world.scene
-		this.count = count
-		
-		this.setMesh()
+		this.viewport = new Viewport()
+		this.debug = new Debug()
 
-		this.scene.add(this.mesh)
+		this.setMesh()
+		this.setDebug()
+
+		this.viewport.on('resize', () => {
+			this.mesh.material.uniforms.uPixelRatio.value = this.viewport.pixelRatio
+		})
 	}
 
 	setMesh() {
@@ -32,8 +40,8 @@ export default class Fireflies {
 		const material = new THREE.ShaderMaterial({
 			uniforms: {
 				uTime: { value: 0 },
-				uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) },
-				uSize: { value: 200 },
+				uPixelRatio: { value: this.viewport.pixelRatio },
+				uSize: { value: parameters.fireflies.size },
 			},
 			vertexShader,
 			fragmentShader,
@@ -43,5 +51,44 @@ export default class Fireflies {
 		})
 
 		this.mesh = new THREE.Points(geometry, material)
+
+		this.scene.add(this.mesh)
+	}
+
+	disposeMesh() {
+		this.mesh.geometry.dispose()
+		this.mesh.material.dispose()
+
+		this.scene.remove(this.mesh)
+	}
+
+	setDebug() {
+		if (!this.debug.active) return
+
+		const folder = this.debug.ui.addFolder('fireflies')
+
+		folder
+			.add(parameters.fireflies, 'size')
+			.min(50)
+			.max(500)
+			.step(1)
+			.onChange(value => {
+				this.mesh.material.uniforms.uSize.value = value
+			})
+
+		folder
+			.add(parameters.fireflies, 'count')
+			.min(10)
+			.max(100)
+			.step(1)
+			.onFinishChange(value => {
+				this.count = value
+				this.disposeMesh()
+				this.setMesh()
+			})
+	}
+
+	update(elapsed) {
+		this.mesh.material.uniforms.uTime.value = elapsed
 	}
 }

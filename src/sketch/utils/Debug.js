@@ -14,16 +14,16 @@ export default class Debug {
 			this.ui = new GUI()
 
 			this.stats = new Stats()
-			this.stats.showPanel(0)
+			this.stats.showPanel(1)
 			document.body.appendChild(this.stats.dom)
 		}
 	}
 
-	begin() {
+	beforeRender() {
 		if (this.stats) this.stats.begin()
 	}
 
-	end() {
+	afterRender() {
 		if (this.stats) this.stats.end()
 	}
 }

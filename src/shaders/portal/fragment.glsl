@@ -1,7 +1,7 @@
 
 uniform float uTime;
-uniform vec3 uColorStart;
-uniform vec3 uColorEnd;
+uniform vec3 uInnerColor;
+uniform vec3 uOuterColor;
 
 varying vec2 vUv;
 
@@ -99,7 +99,7 @@ void main() {
 	strength = clamp(strength, 0.0, 1.0);
 
 	// Final color
-	vec3 color = mix(uColorStart, uColorEnd, strength);
+	vec3 color = mix(uInnerColor, uOuterColor, strength);
 
 	gl_FragColor = vec4(color, 1.0);
 }
