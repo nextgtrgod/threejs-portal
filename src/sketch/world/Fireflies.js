@@ -51,6 +51,7 @@ export default class Fireflies {
 		})
 
 		this.mesh = new THREE.Points(geometry, material)
+		this.mesh.name = 'fireflies'
 
 		this.scene.add(this.mesh)
 	}

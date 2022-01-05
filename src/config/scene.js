@@ -5,12 +5,12 @@ const parameters = {
 		background: new THREE.Color(0x232323),
 	},
 	bokeh: {
-		focus: 5.133,
+		focus: 11.945,
 		aperture: 0.003,
-		maxblur: 0.005,
+		maxblur: 0.0075,
 	},
 	bloom: {
-		strength: 0.5,
+		strength: 0.6,
 		radius: 0.4,
 		threshold: 0.8,
 	},
@@ -19,7 +19,7 @@ const parameters = {
 		outerColor: new THREE.Color(0xffffff),
 	},
 	fireflies: {
-		count: 30,
+		count: 40,
 		size: 200,
 	},
 }

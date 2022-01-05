@@ -2,8 +2,8 @@ import * as THREE from 'three'
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js'
-import { BokehPass } from 'three/examples/jsm/postprocessing/BokehPass.js'
 import Sketch from './Sketch.js'
+import DepthOfField from './DepthOfField.js'
 import parameters from '@/config/scene.js'
 
 export default class Renderer {
@@ -23,7 +23,7 @@ export default class Renderer {
 	setInstance() {
 		this.instance = new THREE.WebGLRenderer({
 			canvas: this.canvas,
-			antialias: false,
+			antialias: true,
 			powerPreference: 'high-performance',
 			// stencil: false,
 			// depth: false,
@@ -40,9 +40,11 @@ export default class Renderer {
 	setPostProcess() {
 		this.postProcess = {}
 
-		const RenderTarget = this.viewport.pixelRatio > 2
-			? THREE.WebGLRenderTarget
-			: THREE.WebGLMultisampleRenderTarget
+		// const RenderTarget = this.viewport.pixelRatio >= 2
+		// 	? THREE.WebGLRenderTarget
+		// 	: THREE.WebGLMultisampleRenderTarget // this one has ios bug
+
+		const RenderTarget = THREE.WebGLRenderTarget
 	
 		const renderTarget = new RenderTarget(
 			this.viewport.width,
@@ -59,18 +61,17 @@ export default class Renderer {
 		this.postProcess.composer = new EffectComposer(this.instance, renderTarget)
 	
 		this.postProcess.renderPass = new RenderPass(this.scene, this.camera.instance)
-		this.postProcess.bokehPass = new BokehPass(this.scene, this.camera.instance, {
-			focus: parameters.bokeh.focus,
-			aperture: parameters.bokeh.aperture,
-			maxblur: parameters.bokeh.maxblur,
-		})
+
+		this.depthOfField = new DepthOfField()
+		this.postProcess.bokehPass = this.depthOfField.bokehPass
+
 		this.postProcess.bloomPass = new UnrealBloomPass(
 			new THREE.Vector2( this.viewport.width, this.viewport.height ),
 			parameters.bloom.strength,
 			parameters.bloom.radius,
 			parameters.bloom.threshold,
 		)
-	
+
 		this.postProcess.composer.addPass(this.postProcess.renderPass)
 		this.postProcess.composer.addPass(this.postProcess.bloomPass)
 		this.postProcess.composer.addPass(this.postProcess.bokehPass)
@@ -99,7 +100,7 @@ export default class Renderer {
 			folder
 				.add(this.postProcess.bokehPass.uniforms.focus, 'value')
 				.min(1)
-				.max(10)
+				.max(16)
 				.step(0.001)
 				.name('focus')
 			folder
@@ -132,8 +133,9 @@ export default class Renderer {
 		this.postProcess.composer.setPixelRatio(this.viewport.pixelRatio)
 	}
 
-	update() {
+	update(elasped, delta) {
 		// this.instance.render(this.scene, this.camera.instance)
+		this.depthOfField.update(elasped, delta)
 		this.postProcess.composer.render()
 	}
 }

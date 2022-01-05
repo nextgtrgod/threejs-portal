@@ -25,8 +25,11 @@ export default class Sketch {
 		this.viewport.on('resize', this.resize.bind(this))
 
 		this.world.on('ready', () => {
+			this.renderer.depthOfField.setFocusObjects( Object.values(this.world.portal.meshes) )
+			
 			this.time = new Time()
 			this.time.on('update', this.update.bind(this))
+			
 			document.body.classList.remove('loading')
 		})
 	}

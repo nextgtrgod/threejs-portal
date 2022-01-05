@@ -71,6 +71,7 @@ export default class Portal {
 			}
 		}
 
+		model.name = 'portal'
 		this.scene.add(model)
 	}
 
