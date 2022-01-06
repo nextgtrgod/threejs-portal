@@ -1,13 +1,8 @@
 import EventEmitter from './EventEmitter.js'
 
-let instance = null
-
 export default class Viewport extends EventEmitter {
 	constructor() {
 		super()
-
-		if (instance) return instance
-		instance = this
 
 		this.setSizes()
 

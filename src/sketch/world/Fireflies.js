@@ -1,6 +1,5 @@
 import * as THREE from 'three'
 import World from './World.js'
-import Viewport from '../utils/Viewport.js'
 import Debug from '../utils/Debug.js'
 import vertexShader from '@/shaders/fireflies/vertex.glsl?raw'
 import fragmentShader from '@/shaders/fireflies/fragment.glsl?raw'
@@ -11,7 +10,7 @@ export default class Fireflies {
 		this.count = count
 		this.world = new World()
 		this.scene = this.world.scene
-		this.viewport = new Viewport()
+		this.viewport = this.world.sketch.viewport
 		this.debug = new Debug()
 
 		this.setMesh()
