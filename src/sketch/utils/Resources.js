@@ -3,6 +3,8 @@ import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 
+const types = ['gltf', 'texture']
+
 let instance = null
 
 export default class Resources extends EventEmitter {
@@ -38,7 +40,7 @@ export default class Resources extends EventEmitter {
 	}
 
 	load(sources = []) {
-		this.sources = sources
+		this.sources = sources.filter(source => types.includes(source.type))
 		this.toLoad = this.sources.length
 		this.loaded = 0
 
@@ -82,8 +84,6 @@ export default class Resources extends EventEmitter {
 	updateUI() {
 		if (!this.ui) return
 
-		const progress = Math.round(100 * (this.loaded / this.toLoad))
-
-		this.ui.style.transform = `scaleX(${progress}%)`
+		this.ui.style.transform = `scaleX(${this.loaded / this.toLoad})`
 	}
 }

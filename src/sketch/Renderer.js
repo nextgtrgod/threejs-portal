@@ -29,6 +29,7 @@ export default class Renderer {
 			// depth: false,
 		})
 		this.instance.outputEncoding = THREE.sRGBEncoding
+		// this.instance.logarithmicDepthBuffer = false
 		// this.instance.physicallyCorrectLights = true
 		// this.instance.toneMapping = THREE.ReinhardToneMapping
 		// this.instance.toneMappingExposure = 1.5
@@ -133,9 +134,9 @@ export default class Renderer {
 		this.postProcess.composer.setPixelRatio(this.viewport.pixelRatio)
 	}
 
-	update(elapsed, delta) {
+	update() {
 		// this.instance.render(this.scene, this.camera.instance)
-		this.depthOfField.update(elapsed, delta)
+		this.depthOfField.update()
 		this.postProcess.composer.render()
 	}
 }

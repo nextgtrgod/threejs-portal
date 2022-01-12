@@ -38,7 +38,7 @@ export default class Sketch {
 
 			this.time = new Time()
 			this.time.on('update', this.update.bind(this))
-			
+
 			document.body.classList.remove('loading')
 		})
 	}
@@ -59,7 +59,7 @@ export default class Sketch {
 
 		gsap.updateRoot(elapsed)
 
-		this.renderer.update(elapsed)
+		this.renderer.update()
 
 		this.debug.afterRender()
 	}

@@ -12,6 +12,7 @@ export default class Raycaster extends EventEmitter {
 		instance = this
 
 		this.sketch = new Sketch()
+		this.canvas = this.sketch.canvas
 		this.camera = this.sketch.camera
 		this.objects = []
 		this.instance = new THREE.Raycaster()
@@ -20,12 +21,12 @@ export default class Raycaster extends EventEmitter {
 		this.mouse = new THREE.Vector2()
 		this.intersections = []
 
-		window.addEventListener('mousemove', ({ clientX, clientY }) => {
+		this.canvas.addEventListener('mousemove', ({ clientX, clientY }) => {
 			this.mouse.x = 2 * (clientX / this.sketch.viewport.width) - 1
 			this.mouse.y = -2 * (clientY / this.sketch.viewport.height) + 1
 		})
 
-		window.addEventListener('click', () => {
+		this.canvas.addEventListener('click', () => {
 			if (!this.intersections.length) return
 			this.emit('click', this.intersections[0])
 		})
