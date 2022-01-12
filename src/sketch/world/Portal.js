@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import { gsap } from 'gsap'
 import World from './World.js'
 import Resources from '../utils/Resources.js'
 import vertexShader from '@/shaders/portal/vertex.glsl?raw'
@@ -9,12 +10,14 @@ import parameters from '@/config/scene.js'
 export default class Portal {
 	constructor() {
 		this.world = new World()
-		this.scene = this.world.scene
+		this.scene = this.world.group
+		this.raycaster = this.world.sketch.raycaster
 		this.resources = new Resources()
 		this.debug = new Debug()
 
 		this.createMaterials()
 		this.setMaterials()
+		this.setAnimation()
 		this.setDebug()
 	}
 
@@ -42,9 +45,12 @@ export default class Portal {
 				uTime: { value: 0 },
 				uInnerColor: { value: new THREE.Color(0x000000) },
 				uOuterColor: { value: new THREE.Color(0xffffff) },
+				uAlpha: { value: 1 },
+				uOffset: { value: 1.4 },
 			},
 			vertexShader,
 			fragmentShader,
+			transparent: true,
 		})
 	}
 
@@ -68,11 +74,49 @@ export default class Portal {
 			if (names.includes(child.name)) {
 				this.meshes[child.name] = child
 				this.meshes[child.name].material = this.materials[ map[child.name] ]
+				// this.meshes[child.name].material.wireframe = true
 			}
 		}
 
 		model.name = 'portal'
 		this.scene.add(model)
+	}
+
+	setAnimation() {
+		const uniforms = this.meshes.portalLight.material.uniforms
+
+		const params = {
+			uAlpha: 1,
+			uOffset: 1.4,
+		}
+		const tween = gsap.to(
+			params,
+			{
+				uAlpha: 0,
+				uOffset: 2.5,
+				duration: 1,
+				ease: 'power1.inOut',
+				onUpdate() {
+					uniforms.uAlpha.value = params.uAlpha
+					uniforms.uOffset.value = params.uOffset
+				},
+				// onStart: () => {
+				// 	console.log('animation start')
+				// },
+				// onComplete: () => {
+				// 	console.log('animation complete')
+				// },
+				paused: true,
+			},
+		)
+
+		this.raycaster.on('click', ({ object }) => {
+			if (object.name !== 'portalLight') return
+			if (tween.isActive()) return
+
+			if (tween.progress() === 0) tween.play()
+			if (tween.progress() === 1) tween.reverse()
+		})
 	}
 
 	setDebug() {

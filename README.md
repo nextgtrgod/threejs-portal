@@ -6,7 +6,7 @@
 </a>
 
 ## Todo
-- [ ] Loading indicator
+- [x] Loading indicator
 - [ ] Resize debouncing
 - [ ] Portal interaction
 - [ ] Tweak scene colors

@@ -7,6 +7,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "gsap": "^3.9.1",
     "lil-gui": "^0.16.0",
     "postprocessing": "^6.23.3",
     "stats.js": "^0.17.0",
@@ -15,6 +16,7 @@
   "devDependencies": {
     "postcss-import": "^14.0.2",
     "postcss-preset-env": "^7.2.0",
+    "sharp": "^0.29.3",
     "vite": "^2.7.10"
   }
 }

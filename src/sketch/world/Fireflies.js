@@ -9,7 +9,7 @@ export default class Fireflies {
 	constructor(count = parameters.fireflies.count) {
 		this.count = count
 		this.world = new World()
-		this.scene = this.world.scene
+		this.scene = this.world.group
 		this.viewport = this.world.sketch.viewport
 		this.debug = new Debug()
 

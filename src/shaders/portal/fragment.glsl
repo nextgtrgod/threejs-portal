@@ -2,6 +2,8 @@
 uniform float uTime;
 uniform vec3 uInnerColor;
 uniform vec3 uOuterColor;
+uniform float uAlpha;
+uniform float uOffset;
 
 varying vec2 vUv;
 
@@ -89,7 +91,7 @@ void main() {
 	float strength = cnoise( vec3(displacedUv * 5.0, uTime * 0.2) );
 
 	// Outer glow
-	float outerGlow = distance(vUv, vec2(0.5)) * 5.0 - 1.4;
+	float outerGlow = distance(vUv, vec2(0.5)) * 5.0 - uOffset;
 	strength += outerGlow;
 
 	// Apply cool step
@@ -98,8 +100,12 @@ void main() {
 	// Clamp value from 0 to 1
 	strength = clamp(strength, 0.0, 1.0);
 
-	// Final color
-	vec3 color = mix(uInnerColor, uOuterColor, strength);
+	// Colors wrap with alpha
+	vec4 innerColor = vec4(uInnerColor, uAlpha);
+	vec4 outerColor = vec4(uOuterColor, 1.0);
 
-	gl_FragColor = vec4(color, 1.0);
+	// Final color
+	vec4 color = mix(innerColor, outerColor, strength);
+
+	gl_FragColor = color;
 }

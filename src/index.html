@@ -9,13 +9,93 @@
 	<title>Portal</title>
 	<style>
 		body {
+			margin: 0;
+			font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica,Arial,sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+			color: #FFF;
 			background-color: #232323;
+		}
+
+		body.loading #loader {
+			opacity: 1;
+			transition-delay: 0s;
+			pointer-events: all;
+		}
+
+		body.loading #loader p {
+			transform: translate3d(0, 0, 0);
+		}
+
+		body.loading #loader p:after {
+			animation: dots 2s linear infinite;
+		}
+
+		#loader {
+			position: fixed;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			display: flex;
+			align-items: flex-start;
+			flex-direction: column;
+			justify-content: center;
+			background-color: inherit;
+			opacity: 0;
+			transition: opacity .3s .4s;
+			pointer-events: none;
+		}
+
+		p {
+			margin-top: -24px;
+			margin-bottom: 6px;
+			font-size: 21px;
+			font-weight: 300;
+			line-height: 1;
+			text-align: left;
+			transform: translate3d(-100%, 0, 0);
+			transform-origin: 0% 50%;
+			transition: transform .3s;
+		}
+		p:after {
+			content: '';
+			padding-left: .25ch;
+		}
+
+		@keyframes dots {
+			0% {
+				content: '.';
+			}
+			33% {
+				content: '..';
+			}
+			50% {
+				content: '...';
+			}
+		}
+
+		.bar {
+			width: 100%;
+			height: 2px;
+			background-color: #FFF;
+			transform-origin: 0% 50%;
+			transform: scaleX(0);
+			transition: transform .3s linear;
+			will-change: transform;
+		}
+
+		@keyframes rotate {
+			to {
+				transform: rotate(360deg);
+			}
 		}
 	</style>
 </head>
 <body class="loading">
 	<canvas id="scene"></canvas>
-	<div id="loader"></div>
+	<div id="loader">
+		<p>Loading</p>
+		<span class="bar"></span>
+	</div>
 	<script type="module" src="/main.js"></script>
 </body>
 </html>

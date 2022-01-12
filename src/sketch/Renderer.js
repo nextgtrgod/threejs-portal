@@ -133,9 +133,9 @@ export default class Renderer {
 		this.postProcess.composer.setPixelRatio(this.viewport.pixelRatio)
 	}
 
-	update(elasped, delta) {
+	update(elapsed, delta) {
 		// this.instance.render(this.scene, this.camera.instance)
-		this.depthOfField.update(elasped, delta)
+		this.depthOfField.update(elapsed, delta)
 		this.postProcess.composer.render()
 	}
 }
