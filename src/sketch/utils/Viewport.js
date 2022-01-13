@@ -1,4 +1,5 @@
 import EventEmitter from './EventEmitter.js'
+import debounce from '@/utils/debounce.js'
 
 export default class Viewport extends EventEmitter {
 	constructor() {
@@ -6,10 +7,13 @@ export default class Viewport extends EventEmitter {
 
 		this.setSizes()
 
-		window.addEventListener('resize', () => {
-			this.setSizes()
-			this.emit('resize')
-		})
+		window.addEventListener('resize', debounce(
+			() => {
+				this.setSizes()
+				this.emit('resize')
+			},
+			250,
+		))
 	}
 
 	setSizes() {

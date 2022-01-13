@@ -7,7 +7,8 @@
 
 ## Todo
 - [x] Loading indicator
-- [ ] Resize debouncing
+- [x] Resize debouncing
 - [ ] Portal interaction
 - [ ] Tweak scene colors
 - [ ] Tweak portal bricks size
+- [ ] Texture to tiles
