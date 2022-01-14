@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import { gsap } from 'gsap'
 import World from './World.js'
 import Resources from '../utils/Resources.js'
+import Video from './Video.js'
 import vertexShader from '@/shaders/portal/vertex.glsl?raw'
 import fragmentShader from '@/shaders/portal/fragment.glsl?raw'
 import Debug from '../utils/Debug.js'
@@ -15,8 +16,11 @@ export default class Portal {
 		this.resources = new Resources()
 		this.debug = new Debug()
 
+		this.opened = false
+
 		this.createMaterials()
 		this.setMaterials()
+		this.setVideo()
 		this.setAnimation()
 		this.setDebug()
 	}
@@ -82,6 +86,12 @@ export default class Portal {
 		this.scene.add(model)
 	}
 
+	setVideo() {
+		this.video = new Video({
+			position: this.meshes.portalLight.position,
+		})
+	}
+
 	setAnimation() {
 		const uniforms = this.meshes.portalLight.material.uniforms
 
@@ -94,18 +104,23 @@ export default class Portal {
 			{
 				uAlpha: 0,
 				uOffset: 2.5,
-				duration: 1,
+				duration: 0.85,
 				ease: 'power1.inOut',
 				onUpdate() {
 					uniforms.uAlpha.value = params.uAlpha
 					uniforms.uOffset.value = params.uOffset
 				},
-				// onStart: () => {
-				// 	console.log('animation start')
-				// },
-				// onComplete: () => {
-				// 	console.log('animation complete')
-				// },
+				onComplete: () => {
+					this.opened = true
+
+					setTimeout(() => {
+						tween.reverse()
+					}, 2500)
+				},
+				onReverseComplete: () => {
+					this.opened = false
+					this.video.setCurrent()
+				},
 				paused: true,
 			},
 		)
@@ -114,8 +129,12 @@ export default class Portal {
 			if (object.name !== 'portalLight') return
 			if (tween.isActive()) return
 
-			if (tween.progress() === 0) tween.play()
-			if (tween.progress() === 1) tween.reverse()
+			if (this.opened) {
+				window.open(this.video.current.link, '_blank').focus()
+				return tween.reverse()
+			}
+
+			tween.play()
 		})
 	}
 

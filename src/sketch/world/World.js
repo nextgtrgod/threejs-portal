@@ -6,7 +6,6 @@ import Resources from '../utils/Resources.js'
 import { sources } from '@/config'
 import Portal from './Portal.js'
 import Fireflies from './Fireflies.js'
-import Video from './Video.js'
 
 let instance = null
 
@@ -26,7 +25,6 @@ export default class World extends EventEmitter {
 		this.resources.on('ready', () => {
 			this.portal = new Portal()
 			this.fireflies = new Fireflies()
-			this.video = new Video()
 
 			this.animate()
 

@@ -12,7 +12,7 @@ export default class Debug {
 
 		if (this.active) {
 			this.ui = new GUI()
-			// this.ui.close()
+			if (window.innerWidth < 720) this.ui.close()
 
 			this.stats = new Stats()
 			this.stats.showPanel(1)

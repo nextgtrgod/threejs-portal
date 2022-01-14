@@ -24,6 +24,8 @@ export default class Raycaster extends EventEmitter {
 		this.canvas.addEventListener('mousemove', ({ clientX, clientY }) => {
 			this.mouse.x = 2 * (clientX / this.sketch.viewport.width) - 1
 			this.mouse.y = -2 * (clientY / this.sketch.viewport.height) + 1
+
+			this.update()
 		})
 
 		this.canvas.addEventListener('click', () => {
@@ -38,7 +40,6 @@ export default class Raycaster extends EventEmitter {
 
 	update() {
 		this.instance.setFromCamera(this.mouse, this.camera.instance)
-
 		this.intersections = this.instance.intersectObjects(this.objects)
 	}
 }

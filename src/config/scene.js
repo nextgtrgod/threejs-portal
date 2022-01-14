@@ -7,10 +7,10 @@ const parameters = {
 	bokeh: {
 		focus: 11.945,
 		aperture: 0.003,
-		maxblur: 0.0075, // 0.0075,
+		maxblur: 0.005,
 	},
 	bloom: {
-		strength: 0.6, // 0.6,
+		strength: 0.6,
 		radius: 0.4,
 		threshold: 0.8,
 	},

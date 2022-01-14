@@ -1,25 +1,28 @@
 import * as THREE from 'three'
 import World from './World.js'
-import videoSrc from '@/assets/videos/1.mp4?url'
+import sources from '@/config/videos.js'
 
 export default class Video {
-	constructor() {
+	constructor({ position } = {}) {
 		this.world = new World()
 		this.scene = this.world.group
 
-		const element = document.createElement('video')
+		this.setElement()
+		this.load(sources)
+		this.setCurrent()
+		this.setMesh(position)
+	}
 
-		// const supports = element.canPlayType('video/webm; codecs="vp9"')
-		// console.log(supports)
+	setElement() {
+		this.element = document.createElement('video')
+		this.element.preload = 'auto'
+		this.element.muted = true
+		this.element.loop = true
+		this.element.playsInline = true
+	}
 
-		element.src = videoSrc
-		element.preload = 'auto'
-		element.muted = true
-		element.loop = true
-		element.playsInline = true
-		element.play()
-
-		const texture = new THREE.VideoTexture(element)
+	setMesh(position) {
+		const texture = new THREE.VideoTexture(this.element)
 		texture.encoding = THREE.sRGBEncoding
 		texture.generateMipmaps = false
 		texture.minFilter = THREE.NearestFilter
@@ -32,22 +35,37 @@ export default class Video {
 
 		const geometry = new THREE.CircleBufferGeometry(0.6665305495262146, 32)
 
-		const mesh = new THREE.Mesh(
+		this.mesh = new THREE.Mesh(
 			geometry,
 			material,
 		)
-		mesh.position.copy( this.world.portal.meshes.portalLight.position )
-		mesh.position.z -= 0.001
+		this.mesh.position.copy(position)
+		this.mesh.position.z -= 0.001
 
-		mesh.name = 'video'
-		this.scene.add(mesh)
+		this.mesh.name = 'video'
+		this.scene.add(this.mesh)
+	}
 
-		// console.log(this.meshes.portalLight.position)
+	setCurrent() {
+		const index = this.videos.indexOf(this.current)
+		this.current = this.videos[(index + 1) % this.videos.length]
 
-		// const box = new THREE.Box3()
-		// this.meshes.portalLight.geometry.computeBoundingBox()
-		// box.copy( this.meshes.portalLight.geometry.boundingBox ).applyMatrix4( this.meshes.portalLight.matrixWorld )
+		if (!this.current) return
 
-		// console.log(box)
+		this.element.src = this.current.src
+		this.element.play()
+	}
+
+	load(sources = []) {
+		this.videos = sources.map(({ formats, link }) => {
+			for (const { type, path } of Object.values(formats)) {
+				if (this.element.canPlayType(type) === 'probably') {
+					return {
+						src: path,
+						link,
+					}
+				}
+			}
+		})
 	}
 }

@@ -53,8 +53,6 @@ export default class Sketch {
 
 		this.camera.update()
 
-		this.raycaster.update()
-
 		this.world.update(elapsed)
 
 		gsap.updateRoot(elapsed)
