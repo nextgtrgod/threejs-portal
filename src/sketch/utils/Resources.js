@@ -2,6 +2,7 @@ import EventEmitter from './EventEmitter.js'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
+import join from '@/utils/join'
 
 let instance = null
 
@@ -24,7 +25,7 @@ export default class Resources extends EventEmitter {
 
 	setLoaders() {
 		const dracoLoader = new DRACOLoader()
-		dracoLoader.setDecoderPath('/draco/')
+		dracoLoader.setDecoderPath(join(import.meta.env.BASE_URL, '/draco/'))
 
 		const gltfLoader = new GLTFLoader()
 		gltfLoader.setDRACOLoader(dracoLoader)
