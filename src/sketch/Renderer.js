@@ -29,7 +29,6 @@ export default class Renderer {
 			// stencil: false,
 			// depth: false,
 		})
-		this.instance.outputEncoding = THREE.sRGBEncoding
 		// this.instance.logarithmicDepthBuffer = false
 		// this.instance.physicallyCorrectLights = true
 		// this.instance.toneMapping = THREE.ReinhardToneMapping

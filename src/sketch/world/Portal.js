@@ -30,7 +30,6 @@ export default class Portal {
 
 		const bakedTexture = this.resources.items['bakedTexture']
 		bakedTexture.flipY = false
-		bakedTexture.encoding = THREE.sRGBEncoding
 		bakedTexture.generateMipmaps = false
 		bakedTexture.minFilter = THREE.NearestFilter
 		bakedTexture.magFilter = THREE.NearestFilter

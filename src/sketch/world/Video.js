@@ -23,7 +23,6 @@ export default class Video {
 
 	setMesh(position) {
 		const texture = new THREE.VideoTexture(this.element)
-		texture.encoding = THREE.sRGBEncoding
 		texture.generateMipmaps = false
 		texture.minFilter = THREE.NearestFilter
 		texture.magFilter = THREE.NearestFilter
