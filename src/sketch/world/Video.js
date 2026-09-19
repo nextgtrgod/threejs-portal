@@ -33,7 +33,7 @@ export default class Video {
 			map: texture,
 		})
 
-		const geometry = new THREE.CircleBufferGeometry(0.6665305495262146, 32)
+		const geometry = new THREE.CircleGeometry(0.6665305495262146, 32)
 
 		this.mesh = new THREE.Mesh(
 			geometry,
