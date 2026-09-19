@@ -22,6 +22,9 @@ const parameters = {
 		count: 40,
 		size: 200,
 	},
+	dither: {
+		amount: 1,
+	},
 }
 
 export default parameters

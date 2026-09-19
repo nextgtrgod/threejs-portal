@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js'
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js'
 import Sketch from './Sketch.js'
 import DepthOfField from './DepthOfField.js'
 import parameters from '@/config/scene.js'
@@ -41,26 +42,19 @@ export default class Renderer {
 	setPostProcess() {
 		this.postProcess = {}
 
-		// const RenderTarget = this.viewport.pixelRatio >= 2
-		// 	? THREE.WebGLRenderTarget
-		// 	: THREE.WebGLMultisampleRenderTarget // this one has ios bug
-
-		const RenderTarget = THREE.WebGLRenderTarget
-	
-		const renderTarget = new RenderTarget(
+		const renderTarget = new THREE.WebGLRenderTarget(
 			this.viewport.width,
 			this.viewport.height,
 			{
+				type: THREE.HalfFloatType,
 				generateMipmaps: false,
 				minFilter: THREE.LinearFilter,
 				magFilter: THREE.LinearFilter,
-				format: THREE.RGBFormat,
-				encoding: THREE.sRGBEncoding,
 			},
 		)
 
 		this.postProcess.composer = new EffectComposer(this.instance, renderTarget)
-	
+
 		this.postProcess.renderPass = new RenderPass(this.scene, this.camera.instance)
 
 		this.depthOfField = new DepthOfField()
@@ -73,9 +67,45 @@ export default class Renderer {
 			parameters.bloom.threshold,
 		)
 
+		this.postProcess.ditherPass = new ShaderPass({
+			uniforms: {
+				tDiffuse: { value: null },
+				uAmount: { value: parameters.dither.amount },
+			},
+			vertexShader: /* glsl */`
+				varying vec2 vUv;
+
+				void main() {
+					vUv = uv;
+					gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+				}
+			`,
+			fragmentShader: /* glsl */`
+				uniform sampler2D tDiffuse;
+				uniform float uAmount;
+				varying vec2 vUv;
+
+				float gradientNoise(vec2 p) {
+					return fract(52.9829189 * fract(dot(p, vec2(0.06711056, 0.00583715))));
+				}
+
+				void main() {
+					vec4 color = texture2D(tDiffuse, vUv);
+
+					float n0 = gradientNoise(gl_FragCoord.xy);
+					float n1 = gradientNoise(gl_FragCoord.yx * 1.3 + vec2(17.0, 31.0));
+
+					float dither = (n0 - n1) * uAmount / 255.0;
+
+					gl_FragColor = vec4(color.rgb + dither, color.a);
+				}
+			`,
+		})
+
 		this.postProcess.composer.addPass(this.postProcess.renderPass)
 		this.postProcess.composer.addPass(this.postProcess.bloomPass)
 		this.postProcess.composer.addPass(this.postProcess.bokehPass)
+		this.postProcess.composer.addPass(this.postProcess.ditherPass)
 
 		this.postProcess.composer.setSize(this.viewport.width, this.viewport.height)
 		this.postProcess.composer.setPixelRatio(this.viewport.pixelRatio)
@@ -120,6 +150,7 @@ export default class Renderer {
 
 		{
 			const folder = this.debug.ui.addFolder('bloom')
+			folder.add(this.postProcess.bloomPass, 'enabled')
 			folder.add(this.postProcess.bloomPass, 'strength').min(0).max(2).step(0.001)
 			folder.add(this.postProcess.bloomPass, 'radius').min(0).max(2).step(0.001)
 			folder.add(this.postProcess.bloomPass, 'threshold').min(0).max(2).step(0.001)
